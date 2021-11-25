@@ -19,6 +19,8 @@ import { EventsController } from './events.controller';
       password: 'example',
       database: 'nest-events',
       entities: [Event],
+      // NOTE: REMOVE THIS FOR PROD, IT'S JUST USEFUL FOR LOCAL
+      synchronize: true,
     }),
   ],
   controllers: [AppController, TestController, EventsController],
