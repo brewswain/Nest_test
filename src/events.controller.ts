@@ -9,13 +9,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
 import { Event } from './event.entity';
 import { UpdateEventDto } from './update-event.dto';
 
 // Always remember -- Anytime we create a new controller, we gotta import it into our .module file
-
 @Controller('/events')
 export class EventsController {
   // Good Practise is to keep our Controllers as light as possible by limiting the amount of
@@ -46,6 +45,30 @@ export class EventsController {
   @Get()
   async findAll() {
     return await this.repository.find();
+  }
+
+  // This test route is placed above our @Get(':id') on purpose, since this way our route gets precedence
+  // over our findOne() method. Feel free to mess around with this query here for data, I left it in as
+  // an example of TypeORM operators.
+  @Get('/test')
+  async test() {
+    // Query equivalent is:
+    // SELECT id, event_date FROM event WHERE (event.id > 3 AND event.event_date > '2021-02-12T13:00:00') OR
+    // event.description LIKE '%meet%' ORDER BY event.id DESC LIMIT 2
+    return await this.repository.find({
+      select: ['id', 'event_date'],
+      where: [
+        {
+          id: MoreThan(3),
+          event_date: MoreThan(new Date('2021-02-12T13:00:00')),
+        },
+        { description: Like('%meet%') },
+      ],
+      take: 2,
+      order: {
+        id: 'DESC',
+      },
+    });
   }
 
   // Let's look at declaring dynamic paths here--it should be pretty self-explanatory:
