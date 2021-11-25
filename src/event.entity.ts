@@ -1,6 +1,4 @@
-import { table } from 'console';
-import { SourceMap } from 'module';
-import { Column, Entity, PrimaryGeneratedColumn, Repository } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 // Entities usually simply refer to a class that represents a table in our DB--essentially a
 // Macro-class, if you would. Think stuff like Order, Product, etc.
 
