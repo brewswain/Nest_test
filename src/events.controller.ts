@@ -8,6 +8,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
 import { Event } from './event.entity';
 import { UpdateEventDto } from './update-event.dto';
@@ -20,14 +22,30 @@ export class EventsController {
   // actions we place in each controller. Obviously, this isn't always realistic but it's good
   // to keep in mind.
 
-  // NB: I'm using this private `events` variable as a simple way to store our Events in
-  // memory since this is just a test app and I haven't implemented a db yet. Also I decided to
-  // explicitly write `private events` here instead of `#events` for clarity,
-  private events: Event[] = [];
+  // A Repository is a class that manages the whole database table. It's job is to take care
+  // of all its entities.This can mean creating new, changing some, or even deleting some
+  // entities.
+  // TypeORM has a generic repository class using TypeScript Generics so that it can work
+  // with any Entity. This class contains all the basic methods for fetching and saving entities
+  // like save(), find(), fineOne(), and remove().
+  // Alternatively, there's a Specific Repository class for custom features. Basically this'll be
+  // useful for complex or repeated custom queries
 
+  // Onto Practical examples!
+  // In NestJS, we often receive classes using Dependency Injection. Basically NestJS is in control
+  // of creating classes which follows this flow. Note that our @InjectRepository decorator needs
+  // the entity class for the repository to be passed in as an argument.
+  constructor(
+    @InjectRepository(Event)
+    private readonly repository: Repository<Event>,
+  ) {}
+
+  // Now that we've set up our Injection, note that our Repository methods return a promise,
+  // which makes sense since we're using database modification. Let's make sure all our methods are
+  // async and use some repository methods:
   @Get()
-  findAll() {
-    return this.events;
+  async findAll() {
+    return await this.repository.find();
   }
 
   // Let's look at declaring dynamic paths here--it should be pretty self-explanatory:
@@ -41,54 +59,44 @@ export class EventsController {
   // An interesting thing here to note is that if we left our decorator empty, it'd actually
   // return an object with our response, making it suitable for when your response expects multiple
   // entities/params.
-  findOne(@Param('id') id) {
-    const event = this.events.find((event) => event.id === parseInt(id));
-
-    return event;
+  async findOne(@Param('id') id) {
+    return await this.repository.findOne(id);
   }
 
   // If we look at create() and update(), it's easy to assume that we need some kind of
   // input/ request body. We can do this with our @Body decorator.
   @Post()
-
   // Please note our use of a DTO here. For a writeup and what a DTO is etc, look at
   // create-event.dto.ts, or just command/ctrl click the DTO below.
-  create(@Body() input: CreateEventDto) {
-    // naming our DTO object fields the same as out entities isn't really the best practise,
-    // but in this case, it lets us use the spread syntax to make this example easier:
-    const event = {
+  async create(@Body() input: CreateEventDto) {
+    await this.repository.save({
       ...input,
       event_date: new Date(input.event_date),
-      id: this.events.length + 1,
-    };
-
-    this.events.push(event);
-
-    return event;
+    });
   }
 
   @Patch(':id')
 
   // If we check our UpdateEventDto out, we can see a slightly more advanced usage of our DTO
   // to show how we get away with reusing them for different usecases to avoid repeating code etc.
-  update(@Param('id') id, @Body() input: UpdateEventDto) {
-    const index = this.events.findIndex((event) => event.id === parseInt(id));
+  async update(@Param('id') id, @Body() input: UpdateEventDto) {
+    const event = await this.repository.findOne(id);
 
-    // Pretty ugly but I mean come on, this is temporary code
-    this.events[index] = {
-      ...this.events[index],
+    return await this.repository.save({
+      ...event,
       ...input,
       event_date: input.event_date
         ? new Date(input.event_date)
-        : this.events[index].event_date,
-    };
+        : event.event_date,
+    });
   }
 
   @Delete(':id')
   // Self-explanatory, but this decorator allows us to choose what statusCode we want to get
   // returned by our route handler--in this case a 204/No Content
   @HttpCode(204)
-  remove(@Param('id') id) {
-    this.events = this.events.filter((event) => event.id !== parseInt(id));
+  async remove(@Param('id') id) {
+    const event = await this.repository.findOne(id);
+    await this.repository.remove(event);
   }
 }
