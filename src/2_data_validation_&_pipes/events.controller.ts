@@ -6,14 +6,15 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   ValidationPipe,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
-import { Event } from '../event.entity';
-import { UpdateEventDto } from '../update-event.dto';
+import { Event } from './event.entity';
+import { UpdateEventDto } from './update-event.dto';
 
 @Controller('/events')
 export class EventsController {
@@ -58,6 +59,8 @@ export class EventsController {
 
   @Post()
   async create(
+    // As we can see, the groups syntax is near identical to that with our DTO.
+    // This makes group assignment very easy
     @Body(new ValidationPipe({ groups: ['create'] })) input: CreateEventDto,
   ) {
     await this.repository.save({
@@ -66,6 +69,7 @@ export class EventsController {
     });
   }
 
+  @Patch(':id')
   async update(
     @Param('id') id,
     @Body(new ValidationPipe({ groups: ['update'] })) input: UpdateEventDto,

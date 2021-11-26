@@ -61,6 +61,7 @@ export class EventsController {
     });
   }
 
+  @Patch(':id')
   async update(
     @Param('id') id,
     @Body(new ValidationPipe({ groups: ['update'] })) input: UpdateEventDto,
