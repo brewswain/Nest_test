@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppBeep } from './app.beep';
 import { AppController, TestController } from './app.controller';
 import { AppNewService } from './app.new.service';
 import { AppService } from './app.service';
@@ -62,8 +63,41 @@ import { EventsModule } from './events/events.module';
 
   // lets modify this to use a custom provider (app.new.service.ts).
   // providers: [AppService],
-  providers: [{ provide: AppService, useClass: AppNewService }],
+
   // with this setup now, when we run our GET request on 'localhost:3000', we should get
-  // 'hi from this new service!' returned to us!
+  // 'hi from this new service!' returned to us! This is incredibly useful, because this
+  // proves that as long as our classes share a common API we can use them like this!
+  providers: [
+    { provide: AppService, useClass: AppNewService },
+    // Let's try something else now. Let's inject the application name into both of our
+    // service classes. Let's come up with a provider name, and use a useValue property to
+    // specify the value of this provider:
+    { provide: 'APP_NAME', useValue: 'Nest events backend' },
+    // Now, let's go to our 2 service files to let Nest Inject our values here into them!
+
+    // Once we've done that, if we hit our endpoint to run our getHello() method, it
+    // should now specify our value! This is an excellent way to pass keys, auth, etc along.
+
+    // Finally, let's setup a Factory Provider. This factory Provider can also use dependency
+    // injection, and the syntax is kinda weird so check out the docs here:
+    // https://docs.nestjs.com/fundamentals/custom-providers#factory-providers-usefactory
+    {
+      provide: 'MESSAGE',
+      // We need to inject a dummy class. I called it AppBeep and it can be found at app.beep.ts.
+      // In this case we need to list everything that we want to be injected into the factory
+      // function, so we'll just add our dummy class.
+      inject: [AppBeep],
+
+      // the useFactory function needs every dependency as an argument, and it should return a
+      // value or a class. In this case let's just return some text. Now that that's done, let's
+      // go to our app.new service and inject it there.
+      useFactory: (app) => `${app.beep()} Factory`,
+    },
+    // This dummy class also needs to be a Provider.
+    AppBeep,
+
+    // Once we've done everything here, sending our request should return this:\
+    // 'hi from Nest events backend, beep Factory'.
+  ],
 })
 export class AppModule {}

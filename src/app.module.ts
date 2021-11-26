@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppBeep } from './app.beep';
 import { AppController, TestController } from './app.controller';
 import { AppNewService } from './app.new.service';
 import { AppService } from './app.service';
@@ -24,6 +25,15 @@ import { EventsModule } from './events/events.module';
   controllers: [AppController, TestController],
 
   // providers: [AppService],
-  providers: [{ provide: AppService, useClass: AppNewService }],
+  providers: [
+    { provide: AppService, useClass: AppNewService },
+    { provide: 'APP_NAME', useValue: 'Nest events backend' },
+    {
+      provide: 'MESSAGE',
+      inject: [AppBeep],
+      useFactory: (app) => `${app.beep()} Factory`,
+    },
+    AppBeep,
+  ],
 })
 export class AppModule {}
