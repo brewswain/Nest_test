@@ -84,14 +84,11 @@ export class EventsController {
   // An interesting thing here to note is that if we left our decorator empty, it'd actually
   // return an object with our response, making it suitable for when your response expects multiple
   // entities/params.
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    // Note ParseIntPipe here.
-    // Pipes in NestJS are pathways through which our data or input gets
-    // validated, transformed, or customized, before getting outputted.
+  async findOne(@Param('id') id) {
     return await this.repository.findOne(id);
   }
 
-  // If we look at create() and update(), it's easy to assume that we need some kind of
+  // If we look at create() and update(),the assumption is that we need some kind of
   // input/ request body. We can do this with our @Body decorator.
   @Post()
   // Please note our use of a DTO here. For a writeup and what a DTO is etc, look at
@@ -120,7 +117,7 @@ export class EventsController {
   }
 
   @Delete(':id')
-  // Self-explanatory, but this decorator allows us to choose what statusCode we want to get
+  // This decorator allows us to choose what statusCode we want to get
   // returned by our route handler--in this case a 204/No Content
   @HttpCode(204)
   async remove(@Param('id') id) {

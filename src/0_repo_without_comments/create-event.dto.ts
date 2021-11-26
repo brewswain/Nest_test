@@ -11,6 +11,7 @@ export class CreateEventDto {
   @IsDateString()
   event_date: string;
 
-  @Length(5, 255)
+  @Length(5, 255, { groups: ['create'] })
+  @Length(10, 20, { groups: ['update'] })
   address: string;
 }

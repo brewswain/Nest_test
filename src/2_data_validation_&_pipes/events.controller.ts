@@ -6,14 +6,14 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, MoreThan, Repository } from 'typeorm';
 import { CreateEventDto } from './create-event.dto';
-import { Event } from './event.entity';
-import { UpdateEventDto } from './update-event.dto';
+import { Event } from '../event.entity';
+import { UpdateEventDto } from '../update-event.dto';
 
 @Controller('/events')
 export class EventsController {
@@ -47,19 +47,29 @@ export class EventsController {
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
+    // Note ParseIntPipe here.
+    // Pipes in NestJS are pathways through which our data or input gets
+    // validated, transformed, or customized, before getting outputted. Something cool is that we
+    // can actually use the @UsePipes decorator at the top-level of our class to add pipes that
+    // impact all of our routes in this controller if we wanted:
+    // https://docs.nestjs.com/pipes
     return await this.repository.findOne(id);
   }
 
   @Post()
-  async create(@Body() input: CreateEventDto) {
+  async create(
+    @Body(new ValidationPipe({ groups: ['create'] })) input: CreateEventDto,
+  ) {
     await this.repository.save({
       ...input,
       event_date: new Date(input.event_date),
     });
   }
 
-  @Patch(':id')
-  async update(@Param('id') id, @Body() input: UpdateEventDto) {
+  async update(
+    @Param('id') id,
+    @Body(new ValidationPipe({ groups: ['update'] })) input: UpdateEventDto,
+  ) {
     const event = await this.repository.findOne(id);
 
     return await this.repository.save({

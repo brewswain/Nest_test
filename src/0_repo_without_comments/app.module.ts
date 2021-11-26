@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController, TestController } from './app.controller';
 import { AppService } from './app.service';
-import { Event } from '../event.entity';
-import { EventsController } from '../events.controller';
+import { Event } from './event.entity';
+import { EventsController } from './events.controller';
 
 @Module({
   imports: [
