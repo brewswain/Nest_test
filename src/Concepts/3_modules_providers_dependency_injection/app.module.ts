@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController, TestController } from './app.controller';
+import { AppNewService } from './app.new.service';
 import { AppService } from './app.service';
+import { Event } from './events/event.entity';
 import { EventsModule } from './events/events.module';
 
 // This module file looks lighter than before, but just follow the recc'd reading order
@@ -53,6 +55,15 @@ import { EventsModule } from './events/events.module';
     EventsModule,
   ],
   controllers: [AppController, TestController],
-  providers: [AppService],
+  // As a reminder, aq provider is a class that can be injected using dependency injection
+  // into other classes. NestJS has a built in @Injectable() decorator which we can look at
+  // as a standard QueryRunnerProviderAlreadyReleasedError. We can also make custom providers:
+  // https://docs.nestjs.com/fundamentals/custom-providers
+
+  // lets modify this to use a custom provider (app.new.service.ts).
+  // providers: [AppService],
+  providers: [{ provide: AppService, useClass: AppNewService }],
+  // with this setup now, when we run our GET request on 'localhost:3000', we should get
+  // 'hi from this new service!' returned to us!
 })
 export class AppModule {}

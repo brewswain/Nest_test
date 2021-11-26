@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Event } from './event.entity';
 import { EventsController } from './events.controller';
 
 // Before all else, we created this module by using the nest cli!
