@@ -5,7 +5,11 @@ import { AppService } from './app.service';
 import { Event } from './event.entity';
 import { EventsController } from './events.controller';
 
+// Module is a class using the @Module Decorator.
+// As we can see, here's where we import our controllers, providers, etc
 @Module({
+  // Let's use the imports array here to use our TypeOrmModule.
+  // .forRoot() is used to provide configuration that the module is going to use.
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -15,9 +19,11 @@ import { EventsController } from './events.controller';
       password: 'example',
       database: 'nest-events',
       entities: [Event],
+      // NOTE: REMOVE THIS FOR PROD, IT'S JUST USEFUL FOR LOCAL
       synchronize: true,
     }),
-
+    // Thiswill make our repository for our specific entity available to be
+    // injected by Nest with this particular module.
     TypeOrmModule.forFeature([Event]),
   ],
   controllers: [AppController, TestController, EventsController],

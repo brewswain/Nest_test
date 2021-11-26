@@ -16,7 +16,22 @@ import { Event } from './event.entity';
 import { UpdateEventDto } from './update-event.dto';
 
 @Controller('/events')
+
+// It might be interesting to you to note that EventsController is actually a Provider!
+// We made it a Provider when we used our @InjectRepository decorator. For clarity, a
+// Provider in this context is a class based object that NestJs knows about. It should
+// be created *by* Nest, and its dependencies should be resolved by using dependency
+// injection.
 export class EventsController {
+  // Dependency Injection's job is to figure out what other classes a class needs, and
+  // pass them into said class (how many times can i say class 😭). In this case, our
+  // class was our repository class. This is how we can make our methods use
+  // this.repository.findOne() etc.
+
+  // Dependency injection in this case allows for decoupling of code. This also makes
+  // testing easier, since we can pass test data as dependencies! The dependency can
+  // be injected through the constructor which is the most common path, but we can
+  // also inject through the property.
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
