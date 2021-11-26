@@ -20,6 +20,9 @@ import { UpdateEventDto } from './update-event.dto';
 
 @Controller('/events')
 export class EventsController {
+  // Let's create a new instance of the Logger class. We're passing it the name so that it'd be easier
+  // to tell where these logs are coming from. We have methods with our logger class that allow us
+  // to write logs of varying importance-log,warning, error, debug.
   private readonly logger = new Logger(EventsController.name);
   constructor(
     @InjectRepository(Event)
@@ -28,8 +31,10 @@ export class EventsController {
 
   @Get()
   async findAll() {
+    // let's implement a log rn to show us when we hit our endpoint:
     this.logger.log(`findAll endpoint hit.`);
     const events = await this.repository.find();
+    // Also, let's have a count of how many events we find!
     this.logger.debug(`Found ${events.length} events.`);
     return events;
   }
@@ -56,6 +61,9 @@ export class EventsController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const event = await this.repository.findOne(id);
 
+    // Pretty nice,  this makes sure we throw a 404. Let's make sure we put this logic
+    // in our update() and delete() methods.
+    // https://docs.nestjs.com/exception-filters#built-in-http-exceptions
     if (!event) {
       throw new NotFoundException();
     }

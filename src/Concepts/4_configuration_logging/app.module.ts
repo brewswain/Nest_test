@@ -11,12 +11,23 @@ import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
+    // We use this ConfigModule for loading .env variables by default.
+    // Let's do some configuration now:
     ConfigModule.forRoot({
       isGlobal: true,
+      // ignoreEnvFile: true can be used if we're using dockerized envs etc. to disable loading
+      // any files.
 
+      // Ok so here's where things get interesting. we extracted our typeOrmModule configuration
+      // into its own file, located at config/orm.config.ts. Once we did TableInheritance, we used
+      // our load property to nab said config below.
       load: [ormConfig],
-    }),
 
+      // pretty useful, check .env to see how APP_URL and SUPPORT_EMAIL can now be used
+      expandVariables: true,
+    }),
+    // Once we did that, we changed our .forRoot() into .forRootAsync() which accepts a function.
+    // We'll pass said function  by using our useFactory option:
     TypeOrmModule.forRootAsync({
       useFactory:
         process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
