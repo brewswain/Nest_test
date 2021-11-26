@@ -17,3 +17,7 @@
 2. events.controller.ts
 3. create-event.dto.ts
 4. update-event.dto.ts
+
+---
+
+#### PS If you don't want to see comments and you're just here for references, I have 2 folders in my `src` that have the code with no comments attached.
