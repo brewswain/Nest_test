@@ -1,8 +1,9 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-// Please note: this is a factory function, so it's not just a static object.
-// This means we need to use a method in our app.module which accepts a function.
+import { Attendee } from 'src/events/attendee.entity';
+import { Event } from '../events/event.entity';
+
 export default registerAs(
   'orm.config',
   (): TypeOrmModuleOptions => ({
@@ -12,8 +13,9 @@ export default registerAs(
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [Event],
-    // Let's set this to false for prod benefits
-    synchronize: false,
+
+    // Let's make sure to add our new Attendee entity into our config
+    entities: [Event, Attendee],
+    synchronize: true,
   }),
 );
