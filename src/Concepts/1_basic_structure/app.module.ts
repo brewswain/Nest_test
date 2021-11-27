@@ -22,7 +22,7 @@ import { EventsController } from './events.controller';
       // NOTE: REMOVE THIS FOR PROD, IT'S JUST USEFUL FOR LOCAL
       synchronize: true,
     }),
-    // Thiswill make our repository for our specific entity available to be
+    // This will make our repository for our specific entity available to be
     // injected by Nest with this particular module.
     TypeOrmModule.forFeature([Event]),
   ],
