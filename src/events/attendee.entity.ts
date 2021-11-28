@@ -20,7 +20,7 @@ export class Attendee {
     nullable: false,
   })
   @JoinColumn({
-    name: 'new_event_name',
+    name: 'beep',
   })
   event: Event;
 }

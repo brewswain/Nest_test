@@ -1,4 +1,5 @@
 import {
+  applyDecorators,
   Body,
   Controller,
   Delete,
@@ -51,6 +52,14 @@ export class EventsController {
       order: {
         id: 'DESC',
       },
+    });
+  }
+
+  @Get('/testTwo')
+  async testTwo() {
+    return await this.repository.findOne(1, {
+      loadEagerRelations: false,
+      // relations: ['attendees'],
     });
   }
 

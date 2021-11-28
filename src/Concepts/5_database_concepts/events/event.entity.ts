@@ -1,3 +1,4 @@
+import { EventsController } from 'src/events/events.controller';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Attendee } from './attendee.entity';
 
@@ -33,6 +34,13 @@ export class Event {
   // that will point to the owner side.
 
   // Let's make our event field now in our attendee.entity.ts
-  @OneToMany(() => Attendee, (attendee) => attendee.event)
+  @OneToMany(() => Attendee, (attendee) => attendee.event, {
+    // This must be done with caution, as this has a performance cost.
+    eager: true,
+    // Now, when we hit our 'testTwo' endpoint, we'll get our relations sent to
+    // us by default due to our eager flag. However, even when we configure our
+    // relation to be eager loading, we can skip it in our find and findOne()
+    // methods back in our events.controller.ts
+  })
   attendees: Attendee;
 }

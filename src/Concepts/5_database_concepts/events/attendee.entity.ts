@@ -50,7 +50,7 @@ export class Attendee {
   // our entity that has @ManyToOne(). Let's change eventId's name to new_event_name. Very creative,
   // I know. If we refresh our db we should see that change get reflected.
   @JoinColumn({
-    name: 'new_event_name',
+    name: 'beep',
 
     // If for some reason we wanted our eventId should point to a different column than the primary
     // key (id in this case), we can specify that column by using referencedColumnName:
