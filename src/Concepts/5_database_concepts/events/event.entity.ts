@@ -1,4 +1,3 @@
-import { EventsController } from 'src/events/events.controller';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Attendee } from './attendee.entity';
 
@@ -35,6 +34,8 @@ export class Event {
 
   // Let's make our event field now in our attendee.entity.ts
   @OneToMany(() => Attendee, (attendee) => attendee.event, {
+    // Ignore below until you check out the writeup on events.controller.ts
+
     // This must be done with caution, as this has a performance cost.
     eager: true,
     // Now, when we hit our 'testTwo' endpoint, we'll get our relations sent to
