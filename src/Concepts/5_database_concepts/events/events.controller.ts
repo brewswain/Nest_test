@@ -28,14 +28,6 @@ export class EventsController {
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
 
-    // Ignore this @InjectRepository until you complete learning about our @OneToMany
-    // and @ManyToOne decorators.
-
-    // Let's discussing creating a relationship between 2 entities.
-    // First step is we need to temporarily inject the Attendee Repository into our controller.
-    // Something to remember is that when we inject an entity repository in the context of a
-    //  module, we need to add it in our .forFeature() call of said module. Let's go to
-    // events.module.ts
     @InjectRepository(Attendee)
     private readonly attendeeRepository: Repository<Attendee>,
   ) {}
@@ -66,49 +58,27 @@ export class EventsController {
     });
   }
 
-  // Let's set up a new test endpoint:
-  @Get('testTwo')
+  @Get('/testTwo')
   async testTwo() {
-    // This just loads an event. Something important to note though is that relations can be
-    // either eager-loaded or lazy-loaded. Eager loading means the relations are always fetched
-    //  along with the parent entity. This therefore makes sense to use when we know we'll need
-    //  to use all of the data. Lazy-loading lets us load the main entity and then load the
-    // relations on demand.
-
-    // With lazy-loading, the field has to be wrapped in a promise. Eager loading is performed by
-    // using an SQL join to a related table. We can actually configure our relation to be eager by
-    // default by using the eager property on our configuration object in our @OneToMany
-    // decorator. Let's head over to our event.entity.ts and do that now.
-    return await this.repository.findOne(
-      1,
-      // Once we set this to false, we no longer get our relations by default
-      {
-        // loadEagerRelations: false,
-        // If the relation isn't set to eager, we can still load the relations we need using the
-        // relations property. It's an array of strings in which we put the relations we wish to
-        // load. Experiment with this by removing eager:true in our entity, commenting our
-        // loadEagerRelations line above, and uncommenting our relations line below:
-        relations: ['attendees'],
-      },
-    );
+    return await this.repository.findOne(1, {
+      loadEagerRelations: false,
+      // relations: ['attendees'],
+    });
   }
 
-  // Ignore here until we use @InjectRepository in line 39!
   @Get('associationTest')
   async associationTest() {
-    // there are a couple ways of associating related entities. Let's start with a situation
-    // where we have an event instance fetched without any relations.
-    //
-    // const event = await this.repository.findOne(1);
-    // const attendee = new Attendee();
-    // attendee.name = 'bob';
-    // attendee.event = event;
-    // await this.attendeeRepository.save(attendee);
-    // return event;
-    //
-    // When we hit this endpoint, we should see that Jerry arrives inside of our db.
-    // We actually don't need to fetch the event from the db if we know the id however:
-    //
+    // Id unknown
+
+    const event = await this.repository.findOne(1);
+    const attendee = new Attendee();
+    attendee.name = 'bob';
+    attendee.event = event;
+    await this.attendeeRepository.save(attendee);
+    return event;
+
+    // Id known of event we want to add attendee too
+
     // const event = new Event();
     // event.id = 1;
     // const attendee = new Attendee();
@@ -116,24 +86,17 @@ export class EventsController {
     // attendee.event = event;
     // await this.attendeeRepository.save(attendee);
     // return event;
-    //
-    // The third option we have is to use the 'cascade' option of the relation. Let's
-    // go back to event.entity.ts, then return here when we're done configuring our
-    // cascade option:
-    //
-    const event = await this.repository.findOne(1, {
-      relations: ['attendees'],
-    });
-    const attendee = new Attendee();
-    attendee.name = 'bob but cascading';
 
-    event.attendees.push(attendee);
+    // Using cascading
 
-    await this.repository.save(event);
-
-    return event;
-
-    // We need to be very careful when using cascading however, so keep that in mind.
+    // const event = await this.repository.findOne(1, {
+    //   relations: ['attendees'],
+    // });
+    // const attendee = new Attendee();
+    // attendee.name = 'bob but cascading';
+    // event.attendees.push(attendee);
+    // await this.repository.save(event);
+    // return event;
   }
 
   @Get(':id')

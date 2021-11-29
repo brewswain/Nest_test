@@ -58,45 +58,26 @@ export class EventsController {
     });
   }
 
-  @Get('/testTwo')
+  @Get('testTwo')
   async testTwo() {
     return await this.repository.findOne(1, {
-      loadEagerRelations: false,
-      // relations: ['attendees'],
+      relations: ['attendees'],
     });
   }
 
   @Get('associationTest')
   async associationTest() {
-    // Id unknown
-
-    const event = await this.repository.findOne(1);
+    const event = await this.repository.findOne(1, {
+      relations: ['attendees'],
+    });
     const attendee = new Attendee();
-    attendee.name = 'bob';
-    attendee.event = event;
-    await this.attendeeRepository.save(attendee);
+    attendee.name = 'bob but cascading';
+
+    event.attendees.push(attendee);
+
+    await this.repository.save(event);
+
     return event;
-
-    // Id known of event we want to add attendee too
-
-    // const event = new Event();
-    // event.id = 1;
-    // const attendee = new Attendee();
-    // attendee.name = 'bob2';
-    // attendee.event = event;
-    // await this.attendeeRepository.save(attendee);
-    // return event;
-
-    // Using cascading
-
-    // const event = await this.repository.findOne(1, {
-    //   relations: ['attendees'],
-    // });
-    // const attendee = new Attendee();
-    // attendee.name = 'bob but cascading';
-    // event.attendees.push(attendee);
-    // await this.repository.save(event);
-    // return event;
   }
 
   @Get(':id')
