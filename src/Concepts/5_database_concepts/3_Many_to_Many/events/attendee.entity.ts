@@ -16,18 +16,11 @@ export class Attendee {
   @Column()
   name: string;
 
-  @ManyToOne(
-    () => Event,
-    (event) => event.attendees,
-
-    {
-      nullable: false,
-    },
-  )
+  @ManyToOne(() => Event, (event) => event.attendees, {
+    nullable: false,
+  })
   @JoinColumn({
     name: 'beep',
-
-    referencedColumnName: 'secondary',
   })
   event: Event;
 }
