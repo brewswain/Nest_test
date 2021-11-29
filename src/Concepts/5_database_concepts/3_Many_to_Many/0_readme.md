@@ -2,15 +2,8 @@
 
 ---
 
-### Relations
+This is an unrelated module to the main codebase put in for demonstration purposes from the course i'm taking. As such if you want to integrate it into the codebase properly you'd need to make sure to register our module inside of our app.module.ts and our config files.
 
-1. attendee.entity.ts
-2. event.entity.ts
-3. events.controller.ts
-4. events.module.ts
+With that in mind, on to the reading order:
 
----
-
-### QueryBuilder
-
-1.
+1. teacher.entity.ts
