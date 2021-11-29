@@ -20,6 +20,7 @@ import { Event } from './event.entity';
 
 import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
+import { Attendee } from './attendee.entity';
 
 @Controller('/events')
 export class EventsController {
@@ -27,6 +28,9 @@ export class EventsController {
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
+
+    @InjectRepository(Attendee)
+    private readonly attendeeRepository: Repository<Attendee>,
   ) {}
 
   @Get()
@@ -61,6 +65,39 @@ export class EventsController {
       loadEagerRelations: false,
       // relations: ['attendees'],
     });
+  }
+
+  @Get('associationTest')
+  async associationTest() {
+    // Id unknown
+
+    const event = await this.repository.findOne(1);
+    const attendee = new Attendee();
+    attendee.name = 'bob';
+    attendee.event = event;
+    await this.attendeeRepository.save(attendee);
+    return event;
+
+    // Id known of event we want to add attendee too
+
+    // const event = new Event();
+    // event.id = 1;
+    // const attendee = new Attendee();
+    // attendee.name = 'bob2';
+    // attendee.event = event;
+    // await this.attendeeRepository.save(attendee);
+    // return event;
+
+    // Using cascading
+
+    // const event = await this.repository.findOne(1, {
+    //   relations: ['attendees'],
+    // });
+    // const attendee = new Attendee();
+    // attendee.name = 'bob but cascading';
+    // event.attendees.push(attendee);
+    // await this.repository.save(event);
+    // return event;
   }
 
   @Get(':id')

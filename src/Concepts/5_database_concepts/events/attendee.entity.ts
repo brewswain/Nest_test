@@ -9,7 +9,7 @@ import {
 import { Event } from './event.entity';
 
 // Am event needs attendees, so let's make this entity. We just want an id and a name for now.
-// Now that we've made a simple Entity, check out event.entity.ts where we explore relations:
+// Once we've made a simple Entity, check out event.entity.ts where we explore relations:
 @Entity()
 export class Attendee {
   @PrimaryGeneratedColumn()

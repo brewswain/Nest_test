@@ -18,6 +18,9 @@ export class Event {
   @Column()
   address: string;
 
-  @OneToMany(() => Attendee, (attendee) => attendee.event, { eager: true })
-  attendees: Attendee;
+  @OneToMany(() => Attendee, (attendee) => attendee.event, {
+    eager: true,
+    // cascade: true,
+  })
+  attendees: Attendee[];
 }

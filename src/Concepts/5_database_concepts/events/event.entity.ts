@@ -32,7 +32,7 @@ export class Event {
   // (in this case, our event field we want to make on our Attendee entity)
   // that will point to the owner side.
 
-  // Let's make our event field now in our attendee.entity.ts
+  // Let's make our event field now in our attendee.entity.ts.
   @OneToMany(() => Attendee, (attendee) => attendee.event, {
     // Ignore below until you check out the writeup on events.controller.ts
 
@@ -42,6 +42,18 @@ export class Event {
     // us by default due to our eager flag. However, even when we configure our
     // relation to be eager loading, we can skip it in our find and findOne()
     // methods back in our events.controller.ts
+
+    // Ignore here until you work on the associationTest endpoint.
+
+    // As described in typeorm's documentation, "We can set up cascade options in our
+    // relations, in the cases when we want our related object to be saved whenever
+    // the other object is saved."
+    // Cascade has a couple of options we can use. We can set it to true so
+    // that cascading would work for all the operations, or we can specify the
+    //  operations we want in an array (cascade: ['associationTest'])
+    cascade: true,
+    // Please note that this is not equal to db level cascading. This is a
+    // typeorm only feature. Let's head back to our controller
   })
-  attendees: Attendee;
+  attendees: Attendee[];
 }
